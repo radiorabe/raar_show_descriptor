@@ -1,0 +1,16 @@
+importer:
+  log_level: info
+  overwrite: false
+
+raar:
+  url: https://archiv.rabe.ch/api
+  username:
+  password:
+  options:
+    verify_ssl: 0 # OpenSSL::SSL::VERIFY_NONE
+
+scraper:
+  start_page: https://rabe.ch/sendungen
+  links: '.broadcast-list-shortcode .cat-item a'
+  title: '.broadcast-title'
+  description: '.broadcast-description'

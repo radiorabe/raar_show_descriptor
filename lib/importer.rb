@@ -31,7 +31,7 @@ class Importer
     if should_update_description?(show)
       update_description(show, link)
     else
-      logger.info("Show #{link.text} already has description")
+      logger.debug("Kept description for show #{link.text}")
     end
   end
 
@@ -43,15 +43,19 @@ class Importer
   def update_description(show, link)
     description = fetch_description(link)
     if description.present?
-      raar_client.update_description(show, description)
-      logger.info("Updated description for show #{link.text}")
+      if description.body != show['attributes']['details']
+        raar_client.update_description(show, description)
+        logger.info("Updated description for show #{link.text}")
+      else
+        logger.debug("Unchanged description for show #{link.text}")
+      end
     else
       logger.debug("No description found for show #{link.text}")
     end
   end
 
   def fetch_description(link)
-    logger.debug("Fetching description for show #{link.text}")
+    # logger.debug("Fetching description for show #{link.text}")
     website_client.fetch_show_description(link)
   end
 

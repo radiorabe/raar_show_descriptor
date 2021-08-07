@@ -1,0 +1,11 @@
+# /etc/systemd/system/raar-show-descriptor.service
+
+[Unit]
+Description=Add Raar show detail from rabe.ch
+
+[Service]
+Type=simple
+User=raar-scripts
+Nice=10
+WorkingDirectory=/opt/raar-show-descriptor
+ExecStart=/usr/bin/scl enable rh-ruby25 -- ./bin/raar_show_descriptor.rb

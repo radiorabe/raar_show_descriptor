@@ -1,0 +1,12 @@
+# /etc/systemd/system/raar-show-descriptor.timer
+# sudo systemctl enable raar-show-descriptor.timer
+# sudo systemctl start raar-show-descriptor.timer
+
+[Unit]
+Description=Add Raar show details from rabe.ch
+
+[Timer]
+OnCalendar=02:15
+
+[Install]
+WantedBy=timers.target

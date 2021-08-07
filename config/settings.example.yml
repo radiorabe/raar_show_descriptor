@@ -1,6 +1,6 @@
 importer:
   log_level: info
-  overwrite: false
+  overwrite: true
 
 raar:
   url: https://archiv.rabe.ch/api

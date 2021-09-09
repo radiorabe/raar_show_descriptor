@@ -8,4 +8,4 @@ Type=simple
 User=raar-scripts
 Nice=10
 WorkingDirectory=/opt/raar-show-descriptor
-ExecStart=/usr/bin/scl enable rh-ruby25 -- ./bin/raar_show_descriptor.rb
+ExecStart=/usr/bin/scl enable rh-ruby27 -- ./bin/raar_show_descriptor.rb

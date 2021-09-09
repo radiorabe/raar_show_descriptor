@@ -11,7 +11,7 @@ This script is meant to be run manually, because new show descriptions are not a
 
 ## Initial
 
-* Install dependencies: `yum install gcc gcc-c++ glibc-headers rh-ruby25-ruby-devel rh-ruby25-rubygem-bundler libxml2-devel libxslt-devel`
+* Install dependencies: `yum install gcc gcc-c++ glibc-headers rh-ruby7-ruby-devel rh-ruby27-rubygem-bundler libxml2-devel libxslt-devel`
 * Create a user on the server:
   * `useradd --home-dir /opt/raar-scripts --create-home --user-group raar-scripts`
   * `usermod -a -G raar-scripts <your-ssh-user>`
@@ -26,7 +26,7 @@ This script is meant to be run manually, because new show descriptions are not a
 * Prepare the dependencies on your local machine: `bundle package --all-platforms`
 * SCP or Rsync all files: `rsync -avz --exclude .git --exclude .bundle --exclude config/settings.yml . raar-scripts@[server]:/opt/raar-show-descriptor/`.
 * Install the dependencies on the server (as `raar-scripts` in `/opt/raar-show-descriptor`):
-  `source /opt/rh/rh-ruby25/enable && bundle install --deployment --local`
+  `source /opt/rh/rh-ruby27/enable && bundle install --deployment --local`
 
 
 ## License

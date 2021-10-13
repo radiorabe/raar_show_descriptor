@@ -84,7 +84,11 @@ class Importer
 
   def create_logger
     if settings.dig('importer', 'log') == 'syslog'
-      Syslog::Logger.new('raar-show-descriptor')
+      Syslog::Logger.new('raar-show-descriptor').tap do |logger|
+        logger.formatter = proc { |severity, _datetime, _prog, msg|
+          "#{Logger::SEV_LABEL[severity]} #{msg}"
+        }
+      end
     else
       Logger.new(STDOUT)
     end

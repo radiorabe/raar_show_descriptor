@@ -25,24 +25,23 @@ class RaarClient
     response = raar_request(:get,
                             'shows',
                             nil,
-                            params: { q: title },
-                            accept: JSON_API_CONTENT_TYPE,
-                            authorization: "Token token=\"#{api_token}\"")
+                            params: { q: title, api_token: api_token },
+                            accept: JSON_API_CONTENT_TYPE)
     json = JSON.parse(response.body)
     json['data']
   end
 
   def update_show(show, details)
     raar_request(:patch,
-                 "admin/shows/#{show['id']}",
+                 "shows/#{show['id']}",
                  update_payload(show, details).to_json,
                  content_type: JSON_API_CONTENT_TYPE,
-                 accept: JSON_API_CONTENT_TYPE,
-                 authorization: "Token token=\"#{api_token}\"")
+                 accept: JSON_API_CONTENT_TYPE)
   end
 
   def update_payload(show, details)
     {
+      api_token: api_token,
       data: {
         id: show['id'],
         type: show['type'],
@@ -62,7 +61,7 @@ class RaarClient
   end
 
   def api_token
-    @api_token ||= login_user.headers[:x_auth_token]
+    @api_token ||= login_user['api_token']
   end
 
   def login_user
@@ -70,7 +69,9 @@ class RaarClient
       username: settings['username'],
       password: settings['password']
     }
-    raar_request(:post, 'login', credentials)
+    response = raar_request(:post, 'login', credentials)
+    json = JSON.parse(response.body)
+    json['data']['attributes']
   end
 
   def raar_request(method, path, payload = nil, headers = {})

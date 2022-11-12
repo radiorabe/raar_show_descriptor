@@ -28,29 +28,33 @@ class Importer
   end
 
   def handle_show(show, link)
-    if should_update_description?(show)
-      update_description(show, link)
+    if should_change_description?(show)
+      change_description(show, link)
     else
       logger.debug("Kept description for show #{link.text}")
     end
   end
 
-  def should_update_description?(show)
+  def should_change_description?(show)
     settings.dig('importer', 'overwrite') ||
       show['attributes']['details'].to_s.strip.empty?
   end
 
-  def update_description(show, link)
+  def change_description(show, link)
     description = fetch_description(link)
     if description.present?
-      if description.body != show['attributes']['details']
-        raar_client.update_description(show, description)
-        logger.info("Updated description for show #{link.text}")
-      else
-        logger.debug("Unchanged description for show #{link.text}")
-      end
+      update_description(show, link.text, description)
     else
       logger.debug("No description found for show #{link.text}")
+    end
+  end
+
+  def update_description(show, name, description)
+    if description.body == show['attributes']['details']
+      logger.debug("Unchanged description for show #{name}")
+    else
+      raar_client.update_description(show, description)
+      logger.info("Updated description for show #{name}")
     end
   end
 
@@ -90,7 +94,7 @@ class Importer
         }
       end
     else
-      Logger.new(STDOUT)
+      Logger.new($stdout)
     end
   end
 

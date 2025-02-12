@@ -1,6 +1,7 @@
 importer:
   log_level: info
   overwrite: true
+  dry_run: false # true to skip actual update
 
 raar:
   url: https://archiv.rabe.ch/api
@@ -10,7 +11,4 @@ raar:
     verify_ssl: 0 # OpenSSL::SSL::VERIFY_NONE
 
 scraper:
-  start_page: https://rabe.ch/sendungen
-  links: '.broadcast-list-shortcode .cat-item a'
-  title: '.broadcast-title'
-  description: '.broadcast-description'
+  endpoint: https://data.rabe.ch/items/programs

@@ -34,5 +34,5 @@ This script is meant to be run manually, because new show descriptions are not a
 ## License
 
 raar_show_descriptor is released under the terms of the GNU Affero General Public License.
-Copyright 2019-2022 Radio RaBe.
+Copyright 2019-2025 Radio RaBe.
 See `LICENSE` for further information.

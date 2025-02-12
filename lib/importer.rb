@@ -2,15 +2,15 @@ require 'yaml'
 require 'json'
 require 'syslog/logger'
 
-require_relative 'description'
+require_relative 'directus_show'
+require_relative 'directus_client'
 require_relative 'raar_client'
-require_relative 'website_client'
 
 class Importer
 
   def run
-    website_client.show_links.each do |link|
-      handle_link(link)
+    website_client.shows.each do |show|
+      handle_show(show)
     end
   rescue Exception => e # rubocop:disable Lint/RescueException
     logger.fatal("#{e}\n#{e.backtrace.join("\n")}")
@@ -18,53 +18,51 @@ class Importer
 
   private
 
-  def handle_link(link)
-    show = raar_client.fetch_show(link.text)
-    if show
-      handle_show(show, link)
+  def handle_show(show)
+    raar_show = raar_client.fetch_show(show.name)
+    if raar_show
+      handle_raar_show(raar_show, show)
     else
-      logger.info("No show with name '#{link.text}' found")
+      logger.info("No show with name '#{show.name}' found")
     end
   end
 
-  def handle_show(show, link)
-    if should_change_description?(show)
-      change_description(show, link)
+  def handle_raar_show(raar_show, show)
+    if should_change_description?(raar_show)
+      change_description(raar_show, show)
     else
-      logger.debug("Kept description for show #{link.text}")
+      logger.debug("Kept description for show #{show.name}")
     end
   end
 
-  def should_change_description?(show)
+  def should_change_description?(raar_show)
     settings.dig('importer', 'overwrite') ||
-      show['attributes']['details'].to_s.strip.empty?
+      raar_show['attributes']['details'].to_s.strip.empty?
   end
 
-  def change_description(show, link)
-    description = fetch_description(link)
-    if description.present?
-      update_description(show, link.text, description)
+  def change_description(raar_show, show)
+    if show.description?
+      update_description(raar_show, show)
     else
-      logger.debug("No description found for show #{link.text}")
+      logger.debug("No description found for show #{show.name}")
     end
   end
 
-  def update_description(show, name, description)
-    if description.body == show['attributes']['details']
-      logger.debug("Unchanged description for show #{name}")
+  def update_description(raar_show, show)
+    previous = raar_show['attributes']['details']
+    if show.description == previous
+      logger.debug("Unchanged description for show #{show.name}")
     else
-      raar_client.update_description(show, description)
-      logger.info("Updated description for show #{name}")
+      dry_run = settings.dig('importer', 'dry_run')
+      raar_client.update_description(raar_show, show.description) unless dry_run
+      logger.info("#{dry_run ? "Would update" : "Updated"} description for show #{show.name}")
+      logger.debug("- Before:\n#{previous}")
+      logger.debug("- After:\n#{show.description}")
     end
-  end
-
-  def fetch_description(link)
-    # logger.debug("Fetching description for show #{link.text}")
-    website_client.fetch_show_description(link)
   end
 
   def website_client
-    @website_client ||= WebsiteClient.new(settings['scraper'], logger)
+    @website_client ||= DirectusClient.new(settings['scraper'], logger)
   end
 
   def raar_client

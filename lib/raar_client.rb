@@ -16,27 +16,27 @@ class RaarClient
   end
 
   def update_description(show, description)
-    update_show(show, description.body)
+    raar_request(
+      :patch,
+      "shows/#{show['id']}",
+      update_payload(show, description).to_json,
+      content_type: JSON_API_CONTENT_TYPE,
+      accept: JSON_API_CONTENT_TYPE
+    )
   end
 
   private
 
   def search_shows(title)
-    response = raar_request(:get,
-                            'shows',
-                            nil,
-                            params: { q: title, api_token: api_token },
-                            accept: JSON_API_CONTENT_TYPE)
+    response = raar_request(
+      :get,
+      'shows',
+      nil,
+      params: { q: title, api_token: api_token },
+      accept: JSON_API_CONTENT_TYPE
+    )
     json = JSON.parse(response.body)
     json['data']
-  end
-
-  def update_show(show, details)
-    raar_request(:patch,
-                 "shows/#{show['id']}",
-                 update_payload(show, details).to_json,
-                 content_type: JSON_API_CONTENT_TYPE,
-                 accept: JSON_API_CONTENT_TYPE)
   end
 
   def update_payload(show, details)
@@ -87,8 +87,7 @@ class RaarClient
 
   def http_options
     @http_options ||=
-      (settings['options'] || {})
-      .transform_keys(&:to_sym)
+      (settings['options'] || {}).transform_keys(&:to_sym)
   end
 
   def raar_url
